@@ -16,11 +16,14 @@ namespace Ocelot.Provider.Nacos.NacosClient.V2
         /// </summary>
         /// <param name="services">services.</param>
         /// <param name="configuration">configuration</param>
+        /// <param name="section">section, default is nacos</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddNacosAspNet(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddNacosAspNet(this IServiceCollection services, IConfiguration configuration, string section = "nacos")
         {
-            services.Configure<NacosAspNetOptions>(configuration.GetSection("nacos"));
-            services.AddNacosV2Naming(configuration);
+            services.Configure<NacosAspNetOptions>(configuration.GetSection(section));
+
+            services.AddNacosV2Naming(configuration, sectionName: section);
+
             services.AddSingleton<RegSvcBgTask>();
 
             return services;
@@ -39,7 +42,9 @@ namespace Ocelot.Provider.Nacos.NacosClient.V2
 
             var options = new NacosAspNetOptions();
             optionsAccs.Invoke(options);
-            services.AddNacosV2Naming(x => options.BuildSdkOptions());
+
+            services.AddNacosV2Naming(options.BuildSdkOptions());
+
             services.AddSingleton<RegSvcBgTask>();
 
             return services;
